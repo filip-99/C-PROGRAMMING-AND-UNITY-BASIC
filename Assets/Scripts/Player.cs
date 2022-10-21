@@ -17,17 +17,37 @@ public class Player : MonoBehaviour
 
     private bool dead;
     public int health;
+
+    // Imamo poziciju igrača
     private Transform PlayerTransform;
+
+    // Imamo referencu na kruto telo igrača
+    private Rigidbody _rigidbody;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        // Potrebno je da pristupimo komponenti transform tj. da možemo da je kontrolišemo uz pomoć promenjive PlayerTransform
+        PlayerTransform = GetComponent<Transform>();
+        // Takođe nije greška ni ovako da se uradi
+        // PlayerTransform = gameObject.transform;
+
+        // Takođe promenjivoj _rigidbody dodeljujemo da može upravljati komponentom krutog tela
+        _rigidbody = GetComponent<Rigidbody>();
+
+        // U komponenti Rigidbody isključićemo opciju Use Gravity
+        _rigidbody.useGravity = false;
+
+        // Blokiraćemo rotiranje playera tj. kocke, tako da kada pada ne može da se pomera u stranu
+        _rigidbody.freezeRotation = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    // Bez obzira na kašnjenje, fiksno ažuriranje će uvek biti isto
+    void FixedUpdate()
     {
-        
+        // Sledećim kodom izvršićemo rotaciju igrača
+        // Rotaciju vršimo po y osi, dok x i z osa ostaju nepromenjene
+        // Pošto želimo da se rotiramo uz pomoć dugmića levo i desno, koristimo horizontalnu osu
+        PlayerTransform.Rotate(0,Input.GetAxis("Horizontal"),0);
     }
 }
