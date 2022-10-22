@@ -52,18 +52,28 @@ public class Player : MonoBehaviour
         PlayerTransform.Rotate(0, Input.GetAxis("Horizontal"), 0);
 
         // Definišemo brzinu
-        // Vector3 predstavlja "kretanje" na 3 ose x, y i z. Ovde je zadata vrednost 1 na z osi
+        // Vector3 predstavlja "kretanje" na 3 ose x, y i z.
+        // Uticaćemo na z vektor tj. osu, jer kamera daje prikaz igraču da vidi ispred z ose kocke, pa će na dugme w da se kreće unapred
+        // Koristimo vertikalnu osu, jer želimo da se krećemo po z osi na dugmiće W i S 
         Vector3 targetVelocity = new Vector3(0, 0, Input.GetAxis("Vertical"));
         // Promenjivoj targetVelocity dodeljujemo poziciju tj transform komponentu na koju će mo direktno da utičemo 
         targetVelocity = PlayerTransform.TransformDirection(targetVelocity);
         // Pošto je mala vrednost brzine pomnožićemo je sa 10 (10*1=10)
-        targetVelocity *= 10;
+        targetVelocity *= speed;
 
-        // Kada imamo definisano brzinu kretanja njom će mo potisnuti naše kruto telo dodeljeno playeru
-        _rigidbody.AddForce(targetVelocity);
-        // Uticaćemo na brzinunašeg krutog tela dodeljeno igraču
-        Vector3 _velocity = _rigidbody.velocity;
-        // Ispisaćemo brzinu
-        print(_velocity);
+        // Potrebno je uskladiti brzinu tj. odrediti minimalnu i maksimalnu brzinu
+        Vector3 velocity = _rigidbody.velocity;
+        Vector3 velocityChange = targetVelocity - velocity;
+        // Ograničavamo - "stežemo" brzinu na vektoru x
+        velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
+        // Ograničavamo - "stežemo" brzinu na vektoru z
+        velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
+        // Pravilo je da vektore koje ne koristimo njihovu brzinu setujemo na 0
+        velocityChange.y = 0;
+        // Kada smo jasno definisali parametre brzine tj. stegnuli, ovu vrednost dodeljujemo brzini krutog tela
+        _rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
+        // Brzina treba da bude 10 pa štampamo u da bi proverili u konzoli
+        print(_rigidbody.velocity);
+
     }
 }
