@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     // Uvodimo promenjive
     // Prva stvar koju želimo jeste da se naša kocka kreće
-    public float speed = 10;
+    public float speed = 20;
 
     // Potrebno je odrediti i gravitaciju
     public float gravity = 10;
@@ -56,21 +56,25 @@ public class Player : MonoBehaviour
         // Uticaćemo na z vektor tj. osu, jer kamera daje prikaz igraču da vidi ispred z ose kocke, pa će na dugme w da se kreće unapred
         // Koristimo vertikalnu osu, jer želimo da se krećemo po z osi na dugmiće W i S 
         Vector3 targetVelocity = new Vector3(0, 0, Input.GetAxis("Vertical"));
-        // Promenjivoj targetVelocity dodeljujemo poziciju tj transform komponentu na koju će mo direktno da utičemo 
+        // Promenjivoj targetVelocity dodeljujemo poziciju tj. transform komponentu na koju će mo direktno da utičemo 
         targetVelocity = PlayerTransform.TransformDirection(targetVelocity);
         // Pošto je mala vrednost brzine pomnožićemo je sa 10 (10*1=10)
         targetVelocity *= speed;
 
-        // Potrebno je uskladiti brzinu tj. odrediti minimalnu i maksimalnu brzinu
-        Vector3 velocity = _rigidbody.velocity;
-        Vector3 velocityChange = targetVelocity - velocity;
+        // Setovali smo da brzina kretanja krutog tela igrača bude fiksirana na 10
+        Vector3 velocityChange = targetVelocity - _rigidbody.velocity;
+
+        // STEZANJE:
+
         // Ograničavamo - "stežemo" brzinu na vektoru x
         velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
         // Ograničavamo - "stežemo" brzinu na vektoru z
         velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
         // Pravilo je da vektore koje ne koristimo njihovu brzinu setujemo na 0
         velocityChange.y = 0;
+
         // Kada smo jasno definisali parametre brzine tj. stegnuli, ovu vrednost dodeljujemo brzini krutog tela
+        // ForceMode.VelocityChange - znači nemamo sile i neće da nam se igrač kliza po podlozi
         _rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
         // Brzina treba da bude 10 pa štampamo u da bi proverili u konzoli
         print(_rigidbody.velocity);
