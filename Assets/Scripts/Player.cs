@@ -15,6 +15,12 @@ public class Player : MonoBehaviour
     // Brzina se povećava određeno vreme, kada se pokrenemo i ne prelazi zadatu brzinu tj. vrednost promenjive speed
     public float maxVelocityChange = 10;
 
+    // U koliko se nalazimo na zemlji biće true
+    private bool grounded;
+
+    // Uvodimo promenjivu koja predstavlja visinu skoka
+    public float jumpHeight = 2;
+
     private bool dead;
     public int health;
 
@@ -77,7 +83,34 @@ public class Player : MonoBehaviour
         // ForceMode.VelocityChange - znači nemamo sile i neće da nam se igrač kliza po podlozi
         _rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
         // Brzina treba da bude 10 pa štampamo u da bi proverili u konzoli
-        print(_rigidbody.velocity);
+        //print(_rigidbody.velocity);
 
+        // grounded je flase podrazumevano
+        grounded = false;
+        //print(grounded);
+
+        // Ako smo pritisnuli dugme za skok, onda će se izvršiti ledeći kod
+        if (Input.GetButton("Jump"))
+        {
+            _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, CalculateJump(), _rigidbody.velocity.z);
+        }
+
+        // Dodajemo gravitaciju na naš objekat igrača
+        // Sila gravitacije biće negativna vrednost (JER želimo da pada i y osa će ići u minus) pomnožena sa masom našeg krutog tela
+        _rigidbody.AddForce(new Vector3(0, -gravity * _rigidbody.mass, 0));
+    }
+
+    // Funkcija za izračunavanje skoka
+    float CalculateJump()
+    {
+        // Sobzirom da imamo gravitaciju koristićemo sledeću formulu, kako bi dobili tačnu vrednost skoka od zemlje tj. jumpHeight
+        return Mathf.Sqrt(2*jumpHeight*gravity);
+    }
+
+    // Funkcija koja se okida kada objekat igrača dođe u interakciju sa drugim objektima
+    void OnCollisionSy(Collision collision)
+    {
+        // U dodiru sa zemljom okida se metoda i setuje vrednost na true
+        grounded = true;
     }
 }
