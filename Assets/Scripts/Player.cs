@@ -48,6 +48,22 @@ public class Player : MonoBehaviour
         // Sledećim kodom izvršićemo rotaciju igrača
         // Rotaciju vršimo po y osi, dok x i z osa ostaju nepromenjene
         // Pošto želimo da se rotiramo uz pomoć dugmića levo i desno, koristimo horizontalnu osu
-        PlayerTransform.Rotate(0,Input.GetAxis("Horizontal"),0);
+        // Time.deltaTime - vreme koje je potrebno da se ažurira novi frejm (to je vrv 0,nešto)
+        PlayerTransform.Rotate(0, Input.GetAxis("Horizontal"), 0);
+
+        // Definišemo brzinu
+        // Vector3 predstavlja "kretanje" na 3 ose x, y i z. Ovde je zadata vrednost 1 na z osi
+        Vector3 targetVelocity = new Vector3(0, 0, Input.GetAxis("Vertical"));
+        // Promenjivoj targetVelocity dodeljujemo poziciju tj transform komponentu na koju će mo direktno da utičemo 
+        targetVelocity = PlayerTransform.TransformDirection(targetVelocity);
+        // Pošto je mala vrednost brzine pomnožićemo je sa 10 (10*1=10)
+        targetVelocity *= 10;
+
+        // Kada imamo definisano brzinu kretanja njom će mo potisnuti naše kruto telo dodeljeno playeru
+        _rigidbody.AddForce(targetVelocity);
+        // Uticaćemo na brzinunašeg krutog tela dodeljeno igraču
+        Vector3 _velocity = _rigidbody.velocity;
+        // Ispisaćemo brzinu
+        print(_velocity);
     }
 }
