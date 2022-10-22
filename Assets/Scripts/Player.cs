@@ -21,7 +21,10 @@ public class Player : MonoBehaviour
     // Uvodimo promenjivu koja predstavlja visinu skoka
     public float jumpHeight = 2;
 
+
     private bool dead;
+
+
     public int health;
 
     // Imamo poziciju igrača
@@ -29,6 +32,13 @@ public class Player : MonoBehaviour
 
     // Imamo referencu na kruto telo igrača
     private Rigidbody _rigidbody;
+
+    // Uvodimo promenjivu koja broji pokupljene novčiće
+    public int points = 0;
+
+
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -85,12 +95,8 @@ public class Player : MonoBehaviour
         // Brzina treba da bude 10 pa štampamo u da bi proverili u konzoli
         //print(_rigidbody.velocity);
 
-        // grounded je flase podrazumevano
-        grounded = false;
-        //print(grounded);
-
         // Ako smo pritisnuli dugme za skok, onda će se izvršiti ledeći kod
-        if (Input.GetButton("Jump"))
+        if (Input.GetButton("Jump") && grounded == true)
         {
             _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, CalculateJump(), _rigidbody.velocity.z);
         }
@@ -98,6 +104,11 @@ public class Player : MonoBehaviour
         // Dodajemo gravitaciju na naš objekat igrača
         // Sila gravitacije biće negativna vrednost (JER želimo da pada i y osa će ići u minus) pomnožena sa masom našeg krutog tela
         _rigidbody.AddForce(new Vector3(0, -gravity * _rigidbody.mass, 0));
+
+        // grounded je flase podrazumevano
+        grounded = false;
+        //print(grounded);
+
     }
 
     // Funkcija za izračunavanje skoka
@@ -108,9 +119,23 @@ public class Player : MonoBehaviour
     }
 
     // Funkcija koja se okida kada objekat igrača dođe u interakciju sa drugim objektima
-    void OnCollisionSy(Collision collision)
+    void OnCollisionStay()
     {
         // U dodiru sa zemljom okida se metoda i setuje vrednost na true
         grounded = true;
+    }
+
+    // Potrebno je da sakupljamo novčiće, pa setujemo triger
+    private void OnTriggerEnter(Collider other)
+    {
+        // U koliko je igrač došao u dodir sa novčićem izvršava se:
+        if(other.tag == "Coin")
+        {
+            // Kada pokupimo novčić igrač dobija 5 poena
+            points += 5;
+
+            // Kada pokupimo novčić uništićemo ga
+            Destroy(other.gameObject);
+        }
     }
 }
