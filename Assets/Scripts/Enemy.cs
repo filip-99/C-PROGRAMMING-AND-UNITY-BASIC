@@ -8,21 +8,63 @@ public class Enemy : MonoBehaviour
     //  Promenjiva tima enum sadrži listu stanja
     public enum State
     {
+        // Navodimo faze kroz koje moramo da prođemo
         LOOKFOR,
         GOTO,
-        ATTACK
+        ATTACK,
     };
+
     // Trenutno stanje može da ima samo jednu vrednost iz liste enum
     public State currentState;
 
-    void Start()
+    public float speed = .5f;
+
+    // Potrebna je distanca koja okida napad, kada se igrač približi neprijatelju
+    public float GoToDistance = 13;
+    public float AttackDistance = 4;
+    public Transform Target;
+    public string PlayerTag = "Player";
+
+    // Definišemo korutinu
+    IEnumerator Start()
     {
-        
+        // True je u koliko je skripta omogućena
+        while (true)
+        {
+            // Definišemo stanja pomoću switch naredbe
+            switch (currentState)
+            {
+                case State.LOOKFOR:
+                    LookFor();
+                    break;
+
+                case State.GOTO:
+                    GoTo();
+                    break;
+
+                case State.ATTACK:
+                    Attack();
+                    break;
+            }
+            // Pauziramo ovu korutinu
+            yield return 0;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    // Potrebno je definisati metode za izvršavanje stanja
+
+    void LookFor()
     {
-        
+        Debug.Log("Test1");
+    }
+
+    void GoTo()
+    {
+        Debug.Log("Test2");
+    }
+
+    void Attack()
+    {
+        Debug.Log("Test3");
     }
 }
