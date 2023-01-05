@@ -115,7 +115,7 @@ public class Player : MonoBehaviour
     {
         if (health < 1)
         {
-
+            Application.LoadLevel("SampleScene");
         }
     }
 
