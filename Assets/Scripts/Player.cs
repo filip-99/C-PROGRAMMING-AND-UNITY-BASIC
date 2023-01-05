@@ -111,6 +111,14 @@ public class Player : MonoBehaviour
 
     }
 
+    void Update()
+    {
+        if (health < 1)
+        {
+
+        }
+    }
+
     // Funkcija za izračunavanje skoka
     float CalculateJump()
     {

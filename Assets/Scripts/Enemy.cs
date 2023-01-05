@@ -24,12 +24,24 @@ public class Enemy : MonoBehaviour
     public float attackDistance = 4;
     public Transform target;
     public string PlayerTag = "Player";
+    public float attackTimer = 2;
+    private float curTime;
+    private Player playerScript;
 
     // Definišemo korutinu
     IEnumerator Start()
     {
         // Potrebno je da postavimo poziciju za target promenjivu, da bude ista kao kod igrača
         target = GameObject.FindGameObjectWithTag(PlayerTag).transform;
+
+        // Zadajemo vreme koliko će dugo napad da traje
+        curTime = attackTimer;
+
+        if (target != null)
+        {
+            // Potrebna nam je referenca na skriptu od igrača
+            playerScript = target.GetComponent<Player>();
+        }
 
         // True je u koliko je skripta omogućena
         while (true)
@@ -71,6 +83,24 @@ public class Enemy : MonoBehaviour
     {
         Debug.Log("Test2");
 
+        // Potrebno je da nateramo kocku da se okrene ka igraču kad ga juri
+        transform.LookAt(target);
+
+        // Uticaćemo na z osu
+        Vector3 fwd = transform.TransformDirection(Vector3.forward);
+
+        RaycastHit buddy;
+
+        if (Physics.Raycast(transform.position, fwd, out buddy))
+        {
+            if (buddy.transform.tag != PlayerTag)
+            {
+                currentState = State.LOOKFOR;
+                return;
+            }
+        }
+
+
         // U koliko je distanca između igrača i neprijatelja veća od zadate vrednosti neprijatelj kreće ka igraču
         if (Vector3.Distance(target.position, transform.position) > attackDistance)
         {
@@ -87,5 +117,24 @@ public class Enemy : MonoBehaviour
     void Attack()
     {
         Debug.Log("Test3");
+
+        transform.LookAt(target);
+
+        curTime = curTime - Time.deltaTime;
+
+        // Kada se odbroji vreme napada sledeći uslov biće ispunjen
+        if (curTime < 0)
+        {
+            // Oduzeće se zdravlje igraču
+            playerScript.health--;
+
+            curTime = attackTimer;
+        }
+
+        // Kada se udaljimo dovoljno od neprijatelja vratiće se na stanje GOTO
+        if (Vector3.Distance(target.position, transform.position) > attackDistance)
+        {
+            currentState = State.GOTO;
+        }
     }
 }
