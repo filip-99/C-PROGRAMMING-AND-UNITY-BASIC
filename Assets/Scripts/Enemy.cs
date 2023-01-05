@@ -20,14 +20,17 @@ public class Enemy : MonoBehaviour
     public float speed = .5f;
 
     // Potrebna je distanca koja okida napad, kada se igrač približi neprijatelju
-    public float GoToDistance = 13;
-    public float AttackDistance = 4;
-    public Transform Target;
+    public float goToDistance = 13;
+    public float attackDistance = 4;
+    public Transform target;
     public string PlayerTag = "Player";
 
     // Definišemo korutinu
     IEnumerator Start()
     {
+        // Potrebno je da postavimo poziciju za target promenjivu, da bude ista kao kod igrača
+        target = GameObject.FindGameObjectWithTag(PlayerTag).transform;
+
         // True je u koliko je skripta omogućena
         while (true)
         {
@@ -56,11 +59,29 @@ public class Enemy : MonoBehaviour
     void LookFor()
     {
         Debug.Log("Test1");
+        // Proveravamo udaljenost našeg igrača
+        // U koliko je pozicija igrača od neprijatelja manja od zadate udaljenosti, okida se prelaz na sledeće stanje
+        if (Vector3.Distance(target.position, transform.position) < goToDistance)
+        {
+            currentState = State.GOTO;
+        }
     }
 
     void GoTo()
     {
         Debug.Log("Test2");
+
+        // U koliko je distanca između igrača i neprijatelja veća od zadate vrednosti neprijatelj kreće ka igraču
+        if (Vector3.Distance(target.position, transform.position) > attackDistance)
+        {
+            // Potrebno je da neprijatelj prati igrača tj.target poziciju pod određenom brzinom
+            transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        }
+        // U koliko uslov nije ispunjen okinuće se sledeće stanje
+        else
+        {
+            currentState = State.ATTACK;
+        }
     }
 
     void Attack()
